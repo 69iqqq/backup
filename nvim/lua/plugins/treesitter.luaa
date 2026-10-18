@@ -1,0 +1,27 @@
+return {
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+      highlight = {
+        -- We explicitly set enable to true to ensure it stays on
+        enable = true,
+
+        -- This function overrides whatever 'disable' default NvChad had
+        disable = function(lang, buf)
+          -- 1. Disable for specific languages (optional)
+          local disabled_langs = { "c", "cpp", "go" }
+          if vim.tbl_contains(disabled_langs, lang) then
+            return true
+          end
+
+          -- 2. Disable for large files (Performance logic)
+          local max_filesize = 100 * 1024 -- 100 KB
+          local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+          if ok and stats and stats.size > max_filesize then
+            return true
+          end
+        end,
+      },
+    },
+  },
+}
